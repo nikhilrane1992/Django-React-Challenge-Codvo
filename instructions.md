@@ -1,6 +1,6 @@
 ## Instructions
 
-You can find the DeepArmor React Challenge at https://github.com/tech-codvo/Django-React-Challenge
+You can find the Django React Challenge at https://github.com/tech-codvo/Django-React-Challenge
 - Clone the repo
 - Setup has two options:
 	- Docker Compose
