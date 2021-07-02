@@ -1,15 +1,39 @@
 from django.db import models
 
 
+class Artist(models.Model):
+    name = models.TextField(
+        blank=False,
+        db_index=True,
+        unique=True,
+        help_text="Artist name")
+
+    first_year_active = models.IntegerField(
+        blank=True,
+        help_text="First Year Active")
+
+
 class Album(models.Model):
     name = models.TextField(
         blank=False,
         db_index=True,
         unique=True,
         help_text="Album name - can alternatively use 'id' field set to id of existing album when creating new lyrics")
+    
+    year = models.TextField(
+        blank=False,
+        null=True,
+        help_text="Album year")
 
+    artist = models.ForeignKey(
+        Artist,
+        related_name='albums',
+        null=True,
+        on_delete=models.CASCADE,
+        help_text="Artist")
+        
     objects = models.Manager()
-
+    
 
 class Song(models.Model):
     name = models.TextField(
@@ -41,7 +65,10 @@ class Lyric(models.Model):
         on_delete=models.CASCADE,
         help_text="Song")
 
-    votes = models.IntegerField(
+    upvotes = models.IntegerField(
+        default=0
+    )
+    downvotes = models.IntegerField(
         default=0
     )
 
