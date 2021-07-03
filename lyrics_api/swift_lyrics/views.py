@@ -1,6 +1,9 @@
 from rest_framework import mixins, generics, filters, status
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
+from random import randint
+from django.db.models.aggregates import Count
+from rest_framework.decorators import action
 
 from django.http import HttpResponse
 from django.views import View
@@ -10,7 +13,7 @@ from swift_lyrics.serializers.serializer import LyricSerializer, BaseSongSeriali
     AlbumDetailSerializer, \
     SongDetailSerializer, LyricSerializer, SongSerializer, \
     LyricDetailSerializer, LyricVotesSerializer, \
-    BaseArtistSerializer, ArtistDetailSerializer
+    BaseArtistSerializer, ArtistDetailSerializer, LyricRandomSerializer
 
 
 class HealthCheckView(View):
@@ -121,6 +124,23 @@ class LyricUpvoteDownVote(mixins.RetrieveModelMixin,
     
     def get(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
+
+
+class RandomLyric(generics.GenericAPIView,
+                mixins.ListModelMixin):
+    serializer_class = LyricRandomSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        return Lyric.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        count = Lyric.objects.aggregate(count=Count('id'))['count']
+        random_index = randint(0, count - 1)
+        data = Lyric.objects.all()[random_index]
+
+        serializer = self.get_serializer(data)
+        return Response(serializer.data)
 
 
 class ArtistIndex(mixins.ListModelMixin,

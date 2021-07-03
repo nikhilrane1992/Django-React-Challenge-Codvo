@@ -1,6 +1,7 @@
 from drf_yasg import openapi
 from rest_framework import serializers
-
+from random import randint
+from django.db.models.aggregates import Count
 from swift_lyrics.models import Lyric, Song, Album, Artist
 
 
@@ -141,7 +142,7 @@ class LyricVotesSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validation_data):
         """
-        Update and return an existing `Snippet` instance, given the validated data.
+        Update and return an existing lyric instance, given upvote or donvote.
         """
         vote_type = self.context.get('view').kwargs.get('vote_type')
         if vote_type == 'upvote':
@@ -153,3 +154,10 @@ class LyricVotesSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(error)
         instance.save()
         return instance
+
+
+class LyricRandomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lyric
+        fields = ['id', 'text', 'upvotes', 'downvotes']
+
